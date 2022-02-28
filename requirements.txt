@@ -1,3 +1,6 @@
 django
 djangorestframework
-
+djoser
+pendulum
+ipython
+ipdb
