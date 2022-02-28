@@ -40,7 +40,8 @@ INSTALLED_APPS = [
     'rentall',
     'rest_framework',
     'djoser',
-    'rest_framework.authtoken'
+    'rest_framework.authtoken',
+    "django_filters",
 ]
 # SILENCED_SYSTEM_CHECKS = ['fields.E300', 'fields.E307']
 
@@ -113,6 +114,11 @@ REST_FRAMEWORK = {
     'DEFAULT_AUTHENTICATION_CLASSES': (
         'rest_framework.authentication.TokenAuthentication',
         'rest_framework.authentication.SessionAuthentication',),
+
+    'DEFAULT_PAGINATION_CLASS': 'core.pagination.HeaderLimitOffsetPagination',
+                'PAGE_SIZE': 100,
+
+    "DEFAULT_FILTER_BACKENDS": ("django_filters.rest_framework.DjangoFilterBackend",)
 }
 
 LANGUAGE_CODE = 'en-us'
