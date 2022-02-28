@@ -39,7 +39,10 @@ INSTALLED_APPS = [
     'django.contrib.staticfiles',
     'rentall',
     'rest_framework',
+    'djoser',
+    'rest_framework.authtoken'
 ]
+# SILENCED_SYSTEM_CHECKS = ['fields.E300', 'fields.E307']
 
 MIDDLEWARE = [
     'django.middleware.security.SecurityMiddleware',
@@ -102,8 +105,15 @@ AUTH_PASSWORD_VALIDATORS = [
 ]
 
 
-# Internationalization
-# https://docs.djangoproject.com/en/4.0/topics/i18n/
+
+REST_FRAMEWORK = {
+    'DEFAULT_PERMISSION_CLASSES': (
+        'rest_framework.permissions.IsAuthenticated',
+),
+    'DEFAULT_AUTHENTICATION_CLASSES': (
+        'rest_framework.authentication.TokenAuthentication',
+        'rest_framework.authentication.SessionAuthentication',),
+}
 
 LANGUAGE_CODE = 'en-us'
 
@@ -123,3 +133,5 @@ STATIC_URL = 'static/'
 # https://docs.djangoproject.com/en/4.0/ref/settings/#default-auto-field
 
 DEFAULT_AUTO_FIELD = 'django.db.models.BigAutoField'
+
+

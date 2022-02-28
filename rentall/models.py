@@ -1,9 +1,17 @@
+from django.conf import settings
 from django.db import models
 
 class Friend(models.Model):
     name = models.CharField(max_length=100)
+    
+class OwnedModel(models.Model):
+    owner = models.ForeignKey(
+        settings.AUTH_USER_MODEL, on_delete=models.CASCADE, null=True
+    )
+    class Meta:
+        abstract = True
 
-class Belonging(models.Model):
+class Belonging(OwnedModel):
     name = models.CharField(max_length=100)
 
 class Borrowed(models.Model):
@@ -12,4 +20,5 @@ class Borrowed(models.Model):
     when = models.DateTimeField(auto_now_add=True)
     returned = models.DateTimeField(null=True, blank=True)
 
-    
+
+# continue with other models
