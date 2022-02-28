@@ -4,9 +4,13 @@ from . import serializers
 from .permissions import IsOwner
 import pendulum
 import django_filters
+from rest_framework.decorators import action
+from django.core.mail import send_mail
+from rest_framework.response import Response
+from rest_framework_extensions.mixins import NestedViewSetMixin
 
 
-class FriendViewset(viewsets.ModelViewSet):
+class FriendViewset(NestedViewSetMixin,viewsets.ModelViewSet):
     queryset = models.Friend.objects.all()
     serializer_class = serializers.FriendSerializer
     permission_classes = [IsOwner]
@@ -21,6 +25,7 @@ class FriendViewset(viewsets.ModelViewSet):
             output_field=models.BooleanField()
              )
         )
+
 
 class BelongingViewset(viewsets.ModelViewSet):
     queryset = models.Belonging.objects.all()
@@ -39,18 +44,23 @@ class BorrowedFilterSet(django_filters.FilterSet):
         if value:
             return queryset.overdue()
         return queryset
+    
 
-class BorrowedViewset(viewsets.ModelViewSet):
+class BorrowedViewset(NestedViewSetMixin, viewsets.ModelViewSet):
     queryset = models.Borrowed.objects.all()
+    permit_list_expands = ["what", "to_who"]
     serializer_class = serializers.BorrowedSerializer
     permission_classes = [IsOwner]
-    filterset_fields = {
-        'returned': ['exact', 'lte', 'gte', 'isnull']
-        } # here
+    filterset_class = BorrowedFilterSet
 
-    def get_queryset(self):
-        qs = super().get_queryset()
-        only_missing = str(self.request.query_params.get('missing')).lower()
-        if only_missing in ['true', '1']:
-            return qs.filter(returned__isnull=True)
-        return qs
+    @action(detail=True, url_path="remind", methods=["post"])
+    def remind_single(self, request, *args, **kwargs):
+        obj = self.get_object()
+        send_mail(
+            subject=f"Please return my belonging: {obj.what.name}",
+            message=f'You forgot to return my belonging: "{obj.what.name}"" that you borrowed on {obj.when}. Please return it.',
+            from_email="me@example.com",  # your email here
+            recipient_list=[obj.to_who.email],
+            fail_silently=False,
+        )
+        return Response("Email sent.")
