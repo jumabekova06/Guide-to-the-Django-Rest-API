@@ -47,7 +47,7 @@ class BorrowedFilterSet(django_filters.FilterSet):
     
 
 class BorrowedViewset(NestedViewSetMixin, viewsets.ModelViewSet):
-    queryset = models.Borrowed.objects.all()
+    queryset = models.Borrowed.objects.all().select_related("to_who", "what")
     permit_list_expands = ["what", "to_who"]
     serializer_class = serializers.BorrowedSerializer
     permission_classes = [IsOwner]

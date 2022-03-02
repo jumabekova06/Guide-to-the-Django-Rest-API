@@ -15,3 +15,5 @@ friends.register(
     basename="friend-borrow",
     parents_query_lookups=["to_who"],
 )
+router.register(r"belongings", rental_views.BelongingViewset)
+router.register(r"borrowings", rental_views.BorrowedViewset)
